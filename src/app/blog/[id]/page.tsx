@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 async function getData(id: string) {
-  const res = await fetch(`https://jsonplaceholder.typicode.com/posts${id}`, {
+  const res = await fetch(`http://localhost:3000/api/posts/${id}`, {
     cache: 'no-store',
   })
 
@@ -15,6 +15,13 @@ async function getData(id: string) {
   return res.json()
 }
 
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const post = await getData(params.id)
+  return {
+    title: post.title,
+    description: post.desc,
+  }
+}
 const BlogPost = async ({ params }: { params: { id: string } }) => {
   const data = await getData(params.id)
 
@@ -23,16 +30,16 @@ const BlogPost = async ({ params }: { params: { id: string } }) => {
       <div className={styles.top}>
         <div className={styles.info}>
           <h1 className={styles.title}>{data.title}</h1>
-          <p className={styles.desc}>{data.body}</p>
+          <p className={styles.desc}>{data.desc}</p>
           <div className={styles.author}>
             <Image
-              src="/military2.jpg"
+              src={data.img}
               alt=""
               width={40}
               height={40}
               className={styles.avatar}
             />
-            <span className={styles.username}>user name</span>
+            <span className={styles.username}>{data.username}</span>
           </div>
         </div>
         <div className={styles.imageContainer}>
@@ -40,15 +47,7 @@ const BlogPost = async ({ params }: { params: { id: string } }) => {
         </div>
       </div>
       <div className={styles.content}>
-        <p className={styles.text}>
-          test Turning your Idea into Reality. We bring together the teams from
-          the global tech industry.Turning your Idea into Reality. We bring
-          together the teams from the global tech industry.Turning your Idea
-          into Reality. We bring together the teams from the global tech
-          industry.Turning your Idea into Reality. We bring together the teams
-          from the global tech industry.Turning your Idea into Reality. We bring
-          together the teams from the global tech industry.
-        </p>
+        <p className={styles.text}>{data.content}</p>
       </div>
     </div>
   )
