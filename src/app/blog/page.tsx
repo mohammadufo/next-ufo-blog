@@ -2,25 +2,52 @@ import React from 'react'
 import styles from './page.module.css'
 import Link from 'next/link'
 import Image from 'next/image'
+import { notFound } from 'next/navigation'
+
+interface Item {
+  userId: number
+  id: number
+  title: string
+  body: string
+}
+
+async function getData() {
+  const res = await fetch('https://jsonplaceholder.typicode.com/posts', {
+    cache: 'no-store',
+  })
+
+  if (!res.ok) {
+    return notFound()
+  }
+
+  return res.json()
+}
 
 const Blog = async () => {
+  const data = await getData()
   return (
     <div className={styles.mainContainer}>
-      <Link href="/blog/testId" className={styles.container}>
-        <div className={styles.imageContainer}>
-          <Image
-            src="/military2.jpg"
-            alt=""
-            width={400}
-            height={250}
-            className={styles.image}
-          />
-        </div>
-        <div className={styles.content}>
-          <h1 className={styles.title}>test title</h1>
-          <p className={styles.desc}>test desc</p>
-        </div>
-      </Link>
+      {data.map((item: Item) => (
+        <Link
+          href={`/blog/${item.id}`}
+          className={styles.container}
+          key={item.id}
+        >
+          <div className={styles.imageContainer}>
+            <Image
+              src="/military2.jpg"
+              alt=""
+              width={400}
+              height={250}
+              className={styles.image}
+            />
+          </div>
+          <div className={styles.content}>
+            <h1 className={styles.title}>{item.title}</h1>
+            <p className={styles.desc}>test desc</p>
+          </div>
+        </Link>
+      ))}
     </div>
   )
 }
